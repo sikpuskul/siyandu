@@ -1,0 +1,62 @@
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="fw-bold text-primary"><i class="fas fa-users me-2"></i>Data Pasien</h2>
+        <p class="text-muted">Cari dan kelola data sasaran posyandu.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label fw-bold small">Cari Pasien</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white text-muted"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Ketik Nama atau NIK pasien...">
+                    <button class="btn btn-primary px-4" id="btnSearch">CARI</button>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                 <label class="form-label d-none d-md-block">&nbsp;</label> <button class="btn btn-success btn-lg w-100 w-md-auto" id="btnAddPasien">
+                    <i class="fas fa-user-plus me-2"></i>Pasien Baru
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="pasienTable">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Nama Lengkap</th>
+                        <th>NIK</th>
+                        <th>L/P</th>
+                        <th>Umur</th>
+                        <th>Alamat (RT/RW)</th>
+                        <th class="text-end pe-4">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="pasienTableBody">
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <img src="https://img.icons8.com/ios/100/bbbec5/search--v1.png" alt="Search" class="mb-3" style="opacity: 0.5; width: 64px;">
+                            <p class="mb-0">Silakan masukkan kata kunci untuk mencari pasien.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-white py-3">
+        <div class="d-flex justify-content-between align-items-center" id="paginationContainer" style="visibility: hidden;">
+            <span class="text-muted small" id="paginationInfo">Menampilkan 0 dari 0 data</span>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0" id="paginationLinks">
+                    </ul>
+            </nav>
+        </div>
+    </div>
+</div>
