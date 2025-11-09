@@ -1,23 +1,14 @@
 // assets/js/api.js
 
-// URL Backend Apps Script Anda (Pastikan ini URL Deployment terbaru)
+// URL Backend Apps Script Anda
 const API_URL = "https://script.google.com/macros/s/AKfycbwDu_d4I6IpTVOP3eAOmrih2mpg3DGOmDtBQ7ODjK29LOZkwjA1GkhdmpMvyyCSQe2S0w/exec";
 
-/**
- * Fungsi Generik untuk Memanggil API
- * Otomatis menyertakan token sesi jika ada.
- * @param {string} action - Nama aksi (misal: 'searchPasien')
- * @param {object} payload - Data tambahan (misal: {keyword: 'feri', page: 1})
- */
 async function callApi(action, payload = {}) {
-    // 1. Ambil TOKEN dari Local Storage
     const token = localStorage.getItem('sessionToken');
-
-    // 2. Siapkan paket data yang akan dikirim
     const dataToSend = {
         action: action,
-        token: token, // <-- PENTING: Token selalu disertakan di sini
-        ...payload    // Menggabungkan data tambahan ke objek utama
+        token: token,
+        ...payload
     };
 
     console.log(`[API REQ] ${action}:`, dataToSend);
@@ -25,35 +16,34 @@ async function callApi(action, payload = {}) {
     try {
         const response = await fetch(API_URL, {
             method: "POST",
-            // Menggunakan text/plain agar tidak terkena preflight CORS
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify(dataToSend)
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP Error! Status: ${response.status}`);
+            throw new Error(`HTTP Error! Status: ${response.status} ${response.statusText}`);
         }
 
-        const result = await response.json();
-        console.log(`[API RES] ${action}:`, result);
+        // --- DEBUGGING TAMBAHAN ---
+        const textResult = await response.text(); // Ambil respons sebagai teks dulu
+        // console.log(`[API RAW RES]`, textResult); // Uncomment jika ingin lihat mentahannya
 
-        // 3. Cek Global: Jika token ditolak backend (kadaluarsa/tidak valid)
-        if (result.status === 'error' && result.message && result.message.includes('Sesi')) {
-             // Opsional: Auto-logout jika sesi backend sudah hangus tapi frontend masih nyangkut
-             // Swal.fire('Sesi Berakhir', 'Silakan login ulang.', 'warning').then(() => {
-             //    localStorage.clear();
-             //    window.location.href = 'login.html';
-             // });
+        try {
+            // Coba ubah teks tadi ke JSON
+            const jsonResult = JSON.parse(textResult);
+            console.log(`[API RES] ${action}:`, jsonResult);
+            return jsonResult;
+        } catch (e) {
+            // JIKA GAGAL PARSE JSON, BERARTI SERVER KIRIM HTML ERROR
+            console.error("[API FATAL ERROR] Server mengirim bukan JSON:\n", textResult);
+            throw new Error("Terjadi kesalahan fatal di server (Cek Konsol untuk detail).");
         }
-
-        return result;
 
     } catch (error) {
         console.error(`[API ERR] ${action}:`, error);
         return { 
             status: 'error', 
-            message: 'Gagal terhubung ke server. Periksa koneksi internet Anda.',
-            error: error.toString()
+            message: error.message || 'Gagal terhubung ke server.'
         };
     }
 }

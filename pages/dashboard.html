@@ -1,4 +1,64 @@
-<div class="alert alert-warning">
-    <h4><i class="fas fa-tools me-2"></i>Dalam Pengembangan</h4>
-    <p>Halaman Dashboard sedang disiapkan untuk menampilkan statistik kunjungan dan data kesehatan secara visual.</p>
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="fw-bold text-primary"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+        <p class="text-muted">Ringkasan kinerja Posyandu Anda bulan ini.</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card text-white bg-primary h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="text-uppercase mb-2" style="opacity: 0.8;">Kunjungan Bulan Ini</h6>
+                <h2 class="mb-0 fw-bold" id="dashKunjungan">-</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card text-white bg-success h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="text-uppercase mb-2" style="opacity: 0.8;">Total Pasien</h6>
+                <h2 class="mb-0 fw-bold" id="dashPasien">-</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card text-white bg-info h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="text-uppercase mb-2" style="opacity: 0.8;">Balita Datang</h6>
+                <h2 class="mb-0 fw-bold" id="dashBalita">-</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card text-white bg-danger h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="text-uppercase mb-2" style="opacity: 0.8;">Rujukan</h6>
+                <h2 class="mb-0 fw-bold" id="dashRujukan">-</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold">
+                <i class="fas fa-chart-line me-2 text-primary"></i>Tren Kunjungan (6 Bulan Terakhir)
+            </div>
+            <div class="card-body">
+                <canvas id="chartTren" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold">
+                <i class="fas fa-chart-pie me-2 text-success"></i>Proporsi Pasien Bulan Ini
+            </div>
+            <div class="card-body">
+                <canvas id="chartKategori" height="250"></canvas>
+            </div>
+        </div>
+    </div>
 </div>

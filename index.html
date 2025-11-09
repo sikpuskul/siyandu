@@ -27,11 +27,21 @@
                 <a href="#" class="list-group-item list-group-item-action bg-transparent second-text" data-page="dashboard">
                     <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                 </a>
-                <div class="sidebar-divider"></div> <small class="text-muted ms-3 mt-3 mb-1 text-uppercase" style="font-size: 0.7rem;">Pelayanan</small>
+
+                <div class="sidebar-divider"></div>
+
+                <small class="text-muted ms-3 mt-3 mb-1 text-uppercase" style="font-size: 0.7rem;">Operasional</small>
+                
                 <a href="#" class="list-group-item list-group-item-action bg-transparent second-text" data-page="pasien">
                     <i class="fas fa-users me-2"></i>Data Pasien
                 </a>
+                
+                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text" data-page="pendaftaran">
+                    <i class="fas fa-clipboard-list me-2"></i>Kunjungan Hari Ini
+                </a>
+
                 <div class="sidebar-divider"></div>
+
                 <a href="#" class="list-group-item list-group-item-action bg-transparent text-danger fw-bold" id="btnLogout">
                     <i class="fas fa-power-off me-2"></i>Logout
                 </a>
@@ -136,6 +146,63 @@
                         <input type="text" class="form-control" name="nama_ibu" placeholder="Penting untuk data bayi/balita">
                     </div>
 
+                    <hr>
+
+                    <div class="accordion mb-3" id="accordionRiwayat">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed py-2 fw-bold small" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRPK">
+                                    Riwayat Penyakit Keluarga
+                                </button>
+                            </h2>
+                            <div id="collapseRPK" class="accordion-collapse collapse" data-bs-parent="#accordionRiwayat">
+                                <div class="accordion-body">
+                                    <div class="row g-2 small">
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpk[]" value="Hipertensi" id="rpk_ht"><label class="form-check-label" for="rpk_ht">Hipertensi</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpk[]" value="Diabetes" id="rpk_dm"><label class="form-check-label" for="rpk_dm">Diabetes</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpk[]" value="Jantung" id="rpk_jantung"><label class="form-check-label" for="rpk_jantung">Jantung</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpk[]" value="Stroke" id="rpk_stroke"><label class="form-check-label" for="rpk_stroke">Stroke</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpk[]" value="Asma" id="rpk_asma"><label class="form-check-label" for="rpk_asma">Asma</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpk[]" value="Kanker" id="rpk_kanker"><label class="form-check-label" for="rpk_kanker">Kanker</label></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed py-2 fw-bold small" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRPD">
+                                    Riwayat Penyakit Diri Sendiri
+                                </button>
+                            </h2>
+                            <div id="collapseRPD" class="accordion-collapse collapse" data-bs-parent="#accordionRiwayat">
+                                <div class="accordion-body">
+                                    <div class="row g-2 small">
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpd[]" value="Hipertensi" id="rpd_ht"><label class="form-check-label" for="rpd_ht">Hipertensi</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpd[]" value="Diabetes" id="rpd_dm"><label class="form-check-label" for="rpd_dm">Diabetes</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpd[]" value="Jantung" id="rpd_jantung"><label class="form-check-label" for="rpd_jantung">Jantung</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpd[]" value="Stroke" id="rpd_stroke"><label class="form-check-label" for="rpd_stroke">Stroke</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpd[]" value="Asma" id="rpd_asma"><label class="form-check-label" for="rpd_asma">Asma</label></div></div>
+                                        <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="rpd[]" value="Kolesterol" id="rpd_kolesterol"><label class="form-check-label" for="rpd_kolesterol">Kolesterol Tinggi</label></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-light border-warning mb-3">
+                         <div class="card-header py-2 fw-bold small text-dark bg-warning bg-opacity-25">
+                            Faktor Risiko Perilaku
+                        </div>
+                        <div class="card-body py-2">
+                             <div class="row g-2 small">
+                                <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="risk[]" value="Merokok" id="risk_rokok"><label class="form-check-label fw-bold" for="risk_rokok">Merokok</label></div></div>
+                                <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="risk[]" value="Kurang Sayur/Buah" id="risk_diet"><label class="form-check-label" for="risk_diet">Kurang Sayur/Buah</label></div></div>
+                                <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="risk[]" value="Kurang Fisik" id="risk_fisik"><label class="form-check-label" for="risk_fisik">Kurang Aktivitas Fisik</label></div></div>
+                                <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="risk[]" value="Alkohol" id="risk_alkohol"><label class="form-check-label" for="risk_alkohol">Konsumsi Alkohol</label></div></div>
+                            </div>
+                        </div>
+                    </div> 
+
                 </form>
             </div>
             <div class="modal-footer bg-light">
@@ -148,11 +215,120 @@
     </div>
 </div>
 
+
+    <div class="modal fade" id="modalPendaftaran" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-lg"> <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-stethoscope me-2"></i>Pendaftaran Pelayanan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formPendaftaran">
+                    <input type="hidden" id="daftarPasienId" name="id_pasien">
+                    <input type="hidden" id="daftarPasienJk" name="jk_pasien">
+                    <input type="hidden" id="daftarPasienUmur" name="umur_pasien">
+
+                    <div class="alert alert-light border mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Nama Pasien</small>
+                                <strong id="daftarNamaPasien">-</strong>
+                            </div>
+                             <div class="col-md-3 col-6">
+                                <small class="text-muted d-block">Umur</small>
+                                <span id="daftarUmurPasien">-</span> Tahun
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <small class="text-muted d-block">JK</small>
+                                <span id="daftarJkPasien">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                         <div class="col-md-4">
+                            <label class="form-label fw-bold small">Tanggal Kunjungan <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="tanggal_kunjungan" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Berat Badan (KG) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" class="form-control" name="bb" placeholder="0.00" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Tinggi Badan (CM) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.1" class="form-control" name="tb" placeholder="0.0" required>
+                        </div>
+                    </div>
+
+                    <hr>
+                    
+                    <div id="conditionalInputs">
+                        <div class="row g-3 mb-3 section-balita d-none">
+                             <div class="col-md-12"><h6 class="text-muted mb-0">Khusus Balita</h6></div>
+                             <div class="col-md-4">
+                                <label class="form-label small">Lingkar Kepala (CM)</label>
+                                <input type="number" step="0.1" class="form-control" name="lk" placeholder="0.0">
+                            </div>
+                        </div>
+
+                         <div class="row g-3 mb-3 section-wus d-none">
+                             <div class="col-md-12"><h6 class="text-muted mb-0">Status Kesehatan Ibu</h6></div>
+                             <div class="col-md-4">
+                                 <label class="form-label small">Apakah Hamil?</label>
+                                 <select class="form-select" name="status_hamil">
+                                     <option value="Tidak">Tidak</option>
+                                     <option value="Ya">Ya</option>
+                                 </select>
+                             </div>
+                             <div class="col-md-4">
+                                 <label class="form-label small">Apakah Nifas?</label>
+                                 <select class="form-select" name="status_nifas">
+                                     <option value="Tidak">Tidak</option>
+                                     <option value="Ya">Ya</option>
+                                 </select>
+                             </div>
+                              <div class="col-md-4">
+                                <label class="form-label small">LiLA (CM)</label>
+                                <input type="number" step="0.1" class="form-control" name="lila" placeholder="Untuk Bumil/WUS">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3 section-ptm d-none">
+                             <div class="col-md-12"><h6 class="text-muted mb-0">Skrining PTM (Usia > 15 thn)</h6></div>
+                             <div class="col-md-3 col-6">
+                                <label class="form-label small">Tensi Sistole</label>
+                                <input type="number" class="form-control" name="td_sistole" placeholder="mmHg">
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <label class="form-label small">Tensi Diastole</label>
+                                <input type="number" class="form-control" name="td_diastole" placeholder="mmHg">
+                            </div>
+                             <div class="col-md-3 col-6">
+                                <label class="form-label small">Lingkar Perut (CM)</label>
+                                <input type="number" step="0.1" class="form-control" name="lp" placeholder="0.0">
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <label class="form-label small">Gula Darah (mg/dL)</label>
+                                <input type="number" class="form-control" name="gula_darah" placeholder="Sewaktu">
+                            </div>
+                        </div>
+                    </div> </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success px-4" id="btnSubmitPendaftaran">
+                    <i class="fas fa-paper-plane me-2"></i>DAFTARKAN
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
         
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script src="assets/js/api.js"></script>
     <script src="assets/js/main.js"></script>

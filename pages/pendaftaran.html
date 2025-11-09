@@ -1,0 +1,43 @@
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="fw-bold text-primary"><i class="fas fa-clipboard-list me-2"></i>Kunjungan Hari Ini</h2>
+        <p class="text-muted">Monitoring antrian dan status pelayanan pasien.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-calendar-day me-2"></i>Daftar Antrian</h5>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light fw-bold">Tanggal</span>
+                    <input type="date" id="filterTanggal" class="form-control">
+                    <button class="btn btn-primary" id="btnRefreshKunjungan" title="Segarkan">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="tabelKunjungan">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Nama Pasien</th>
+                        <th>Umur / JK</th>
+                        <th>Kategori</th>
+                        <th>Status Layanan</th>
+                        <th class="text-end pe-4">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="kunjunganTableBody">
+                    <tr><td colspan="5" class="text-center py-5 text-muted">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

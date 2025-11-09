@@ -8,14 +8,14 @@
 <div class="card shadow-sm mb-4">
     <div class="card-body p-4">
         <div class="row g-3">
-            <div class="col-md-8">
+            <form class="col-md-8" id="searchForm">
                 <label class="form-label fw-bold small">Cari Pasien</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Ketik Nama atau NIK pasien...">
-                    <button class="btn btn-primary px-4" id="btnSearch">CARI</button>
+                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Ketik Nama atau NIK pasien..." autocomplete="off">
+                    <button type="submit" class="btn btn-primary px-4" id="btnSearch">CARI</button>
                 </div>
-            </div>
+            </form>
             <div class="col-md-4 text-md-end">
                  <label class="form-label d-none d-md-block">&nbsp;</label> <button class="btn btn-success btn-lg w-100 w-md-auto" id="btnAddPasien">
                     <i class="fas fa-user-plus me-2"></i>Pasien Baru

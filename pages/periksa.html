@@ -1,0 +1,1005 @@
+<div class="row mb-3">
+    <div class="col-md-12 d-flex justify-content-between align-items-center mb-3">
+        <button class="btn btn-outline-secondary btn-lg" onclick="loadPage('pendaftaran', 'Kunjungan Hari Ini')">
+            <i class="fas fa-arrow-left me-2"></i>Kembali ke Antrian
+        </button>
+        
+        <button class="btn btn-success btn-lg fw-bold" id="btnSelesaiPelayanan">
+            <i class="fas fa-check-circle me-2"></i>SELESAI PELAYANAN
+        </button>
+    </div>
+
+        <div class="card bg-primary text-white shadow-sm mb-4">
+            <div class="card-body py-3">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h4 class="mb-0 fw-bold" id="periksaNamaPasien">-</h4>
+                        <small><i class="fas fa-id-card me-2"></i><span id="periksaNikPasien">-</span></small>
+                    </div>
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <span class="badge bg-white text-primary fs-6 me-2" id="periksaKategori">-</span>
+                        <span class="fs-5" id="periksaUmur">- Tahun</span>
+                         <span class="badge bg-info text-dark ms-2" id="periksaJk">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs nav-fill mb-4" id="periksaTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active fw-bold" id="tab-rutin" data-bs-toggle="tab" data-bs-target="#content-rutin" type="button" role="tab">
+            <i class="fas fa-clipboard-check me-2"></i>Rutin & TTV
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold disabled" id="tab-tbc" data-bs-toggle="tab" data-bs-target="#content-tbc" type="button" role="tab">
+            <i class="fas fa-lungs me-2"></i>Skrining TBC
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold disabled" id="tab-indera" data-bs-toggle="tab" data-bs-target="#content-indera" type="button" role="tab">
+            <i class="fas fa-eye me-2"></i>Indera
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold disabled" id="tab-ppok" data-bs-toggle="tab" data-bs-target="#content-ppok" type="button" role="tab">
+            <i class="fas fa-lungs-virus me-2"></i>PPOK (PUMA)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold disabled" id="tab-lansia" data-bs-toggle="tab" data-bs-target="#content-lansia" type="button" role="tab">
+            <i class="fas fa-person-cane me-2"></i>Lansia (AKS & SKILAS)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold disabled" id="tab-balita" data-bs-toggle="tab" data-bs-target="#content-balita" type="button" role="tab">
+            <i class="fas fa-baby me-2"></i>Balita
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold disabled" id="tab-ibu" data-bs-toggle="tab" data-bs-target="#content-ibu" type="button" role="tab">
+            <i class="fas fa-person-pregnant me-2"></i>Ibu Hamil & Nifas
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold disabled" id="tab-rematri" data-bs-toggle="tab" data-bs-target="#content-rematri" type="button" role="tab">
+            <i class="fas fa-venus me-2"></i>Rematri
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="periksaTabContent">
+    
+    <div class="tab-pane fade show active" id="content-rutin" role="tabpanel">
+        <form id="formRutin">
+            <input type="hidden" id="currentIdPendaftaran">
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-primary">
+                    <i class="fas fa-weight me-2"></i>Antropometri (Pengukuran Fisik)
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold">Berat Badan (kg)</label>
+                            <input type="number" step="0.01" class="form-control form-control-lg" id="inputBB" name="bb" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold">Tinggi Badan (cm)</label>
+                            <input type="number" step="0.1" class="form-control form-control-lg" id="inputTB" name="tb" required>
+                        </div>
+                        <div class="col-md-3">
+                             <label class="form-label small fw-bold text-muted">IMT (Auto)</label>
+                             <input type="text" class="form-control bg-light fw-bold" id="hasilIMT" readonly>
+                        </div>
+                         <div class="col-md-3">
+                             <label class="form-label small fw-bold text-muted">Status Gizi (Auto)</label>
+                             <input type="text" class="form-control bg-light fw-bold" id="statusGizi" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4 input-balita d-none">
+                            <label class="form-label small fw-bold">Lingkar Kepala (cm)</label>
+                            <input type="number" step="0.1" class="form-control" id="inputLK" name="lk" placeholder="Khusus Balita">
+                        </div>
+                        <div class="col-md-4 input-dewasa d-none">
+                            <label class="form-label small fw-bold">Lingkar Perut (cm)</label>
+                            <input type="number" step="0.1" class="form-control" id="inputLP" name="lp" placeholder="Skrining PTM">
+                        </div>
+                        <div class="col-md-4 input-wus d-none">
+                            <label class="form-label small fw-bold">LiLA (cm)</label>
+                            <input type="number" step="0.1" class="form-control" id="inputLILA" name="lila" placeholder="Bumil / WUS">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4 input-dewasa d-none">
+                <div class="card-header bg-white fw-bold text-danger">
+                    <i class="fas fa-heartbeat me-2"></i>Tanda Vital & PTM
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-6">
+                            <label class="form-label small fw-bold">Tensi Sistole</label>
+                            <input type="number" class="form-control" id="inputSistole" name="td_sistole" placeholder="mmHg">
+                        </div>
+                        <div class="col-md-3 col-6">
+                             <label class="form-label small fw-bold">Tensi Diastole</label>
+                            <input type="number" class="form-control" id="inputDiastole" name="td_diastole" placeholder="mmHg">
+                        </div>
+                         <div class="col-md-3">
+                             <label class="form-label small fw-bold text-muted">Status Tensi (Auto)</label>
+                             <input type="text" class="form-control bg-light fw-bold" id="statusTD" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold">Gula Darah Sewaktu</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="inputGula" name="gula_darah" placeholder="mg/dL">
+                                <span class="input-group-text bg-light" id="statusGula">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <small class="text-muted align-self-center me-3" id="autoSaveStatus">
+                    <i class="fas fa-check-circle me-1"></i>Draft tersimpan otomatis
+                </small>
+                <button type="button" class="btn btn-primary btn-lg px-5" id="btnSimpanRutin">
+                    <i class="fas fa-save me-2"></i>SIMPAN PEMERIKSAAN RUTIN
+                </button>
+            </div>
+
+        </form>
+    </div>
+    <div class="tab-pane fade" id="content-tbc" role="tabpanel">
+        <form id="formTBC">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-danger">
+                    <i class="fas fa-lungs me-2"></i>Skrining Gejala TBC
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-4">Tanyakan gejala berikut ini kepada pasien atau pengantar.</p>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">1. Batuk terus menerus?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tbc_batuk" id="batuk_ya" value="Ya" required>
+                                    <label class="form-check-label" for="batuk_ya">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tbc_batuk" id="batuk_tidak" value="Tidak" checked>
+                                    <label class="form-check-label" for="batuk_tidak">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">2. Demam > 2 minggu?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tbc_demam" id="demam_ya" value="Ya" required>
+                                    <label class="form-check-label" for="demam_ya">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tbc_demam" id="demam_tidak" value="Tidak" checked>
+                                    <label class="form-check-label" for="demam_tidak">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">3. BB turun / tidak naik 2 bln?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tbc_bb" id="bb_ya" value="Ya" required>
+                                    <label class="form-check-label" for="bb_ya">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tbc_bb" id="bb_tidak" value="Tidak" checked>
+                                    <label class="form-check-label" for="bb_tidak">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">4. Kontak erat pasien TBC?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tbc_kontak" id="kontak_ya" value="Ya" required>
+                                    <label class="form-check-label" for="kontak_ya">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tbc_kontak" id="kontak_tidak" value="Tidak" checked>
+                                    <label class="form-check-label" for="kontak_tidak">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    
+                    <div class="alert alert-light text-center" id="hasilTBCBox">
+                        <h5 class="mb-0">Hasil: <span id="hasilTBC" class="badge bg-secondary">Belum Skrining</span></h5>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-primary btn-lg px-5" id="btnSimpanTBC">
+                    <i class="fas fa-save me-2"></i>SIMPAN SKRINING TBC
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="tab-pane fade" id="content-indera" role="tabpanel">
+        <form id="formIndera">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-primary">
+                    <i class="fas fa-eye me-2"></i>Kesehatan Mata (Penglihatan)
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Mata Kanan</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mata_kanan" id="mk_normal" value="Normal" checked>
+                                    <label class="form-check-label" for="mk_normal">Normal</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mata_kanan" id="mk_gangguan" value="Gangguan">
+                                    <label class="form-check-label" for="mk_gangguan">Gangguan</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Mata Kiri</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mata_kiri" id="ml_normal" value="Normal" checked>
+                                    <label class="form-check-label" for="ml_normal">Normal</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mata_kiri" id="ml_gangguan" value="Gangguan">
+                                    <label class="form-check-label" for="ml_gangguan">Gangguan</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-primary">
+                    <i class="fas fa-ear-listen me-2"></i>Kesehatan Telinga (Pendengaran)
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Telinga Kanan</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="telinga_kanan" id="tk_normal" value="Normal" checked>
+                                    <label class="form-check-label" for="tk_normal">Normal</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="telinga_kanan" id="tk_gangguan" value="Gangguan">
+                                    <label class="form-check-label" for="tk_gangguan">Gangguan</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Telinga Kiri</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="telinga_kiri" id="tl_normal" value="Normal" checked>
+                                    <label class="form-check-label" for="tl_normal">Normal</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="telinga_kiri" id="tl_gangguan" value="Gangguan">
+                                    <label class="form-check-label" for="tl_gangguan">Gangguan</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-light text-center mb-4">
+                 <h5 class="mb-0">Hasil: <span id="hasilIndera" class="badge bg-success">Normal</span></h5>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-primary btn-lg px-5" id="btnSimpanIndera">
+                    <i class="fas fa-save me-2"></i>SIMPAN SKRINING INDERA
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="tab-pane fade" id="content-ppok" role="tabpanel">
+        <form id="formPPOK">
+            <div class="alert alert-info mb-4">
+                <div class="row text-center">
+                    <div class="col-6 border-end">
+                        <small>Skor Jenis Kelamin</small>
+                        <h4 class="fw-bold mb-0" id="skorJK">0</h4>
+                    </div>
+                    <div class="col-6">
+                        <small>Skor Usia</small>
+                        <h4 class="fw-bold mb-0" id="skorUsia">0</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-danger">
+                    <i class="fas fa-clipboard-list me-2"></i>Kuesioner PUMA
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">1. Rata-rata jumlah rokok per hari?</label>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="form-check card-radio">
+                                <input class="form-check-input" type="radio" name="puma_rokok" id="rokok_0" value="0" required checked>
+                                <label class="form-check-label w-100" for="rokok_0">
+                                    Tidak merokok / < 20 bungkus per tahun <span class="badge bg-secondary float-end">Skor 0</span>
+                                </label>
+                            </div>
+                            <div class="form-check card-radio">
+                                <input class="form-check-input" type="radio" name="puma_rokok" id="rokok_1" value="1">
+                                <label class="form-check-label w-100" for="rokok_1">
+                                    20 - 30 bungkus per tahun <span class="badge bg-secondary float-end">Skor 1</span>
+                                </label>
+                            </div>
+                            <div class="form-check card-radio">
+                                <input class="form-check-input" type="radio" name="puma_rokok" id="rokok_2" value="2">
+                                <label class="form-check-label w-100" for="rokok_2">
+                                    > 30 bungkus per tahun <span class="badge bg-secondary float-end">Skor 2</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">2. Napas pendek saat jalan cepat/naik tanjakan?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="puma_napas" id="napas_ya" value="Ya" required>
+                                    <label class="form-check-label" for="napas_ya">Ya (Skor 1)</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="puma_napas" id="napas_tidak" value="Tidak" checked>
+                                    <label class="form-check-label" for="napas_tidak">Tidak (Skor 0)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">3. Ada dahak saat tidak flu?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="puma_dahak" id="dahak_ya" value="Ya" required>
+                                    <label class="form-check-label" for="dahak_ya">Ya (Skor 1)</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="puma_dahak" id="dahak_tidak" value="Tidak" checked>
+                                    <label class="form-check-label" for="dahak_tidak">Tidak (Skor 0)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">4. Batuk saat tidak flu?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="puma_batuk" id="batuk_ya" value="Ya" required>
+                                    <label class="form-check-label" for="batuk_ya">Ya (Skor 1)</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="puma_batuk" id="batuk_tidak" value="Tidak" checked>
+                                    <label class="form-check-label" for="batuk_tidak">Tidak (Skor 0)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">5. Pernah tes Spirometri (tiup alat)?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="puma_spiro" id="spiro_ya" value="Ya" required>
+                                    <label class="form-check-label" for="spiro_ya">Ya (Skor 1)</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="puma_spiro" id="spiro_tidak" value="Tidak" checked>
+                                    <label class="form-check-label" for="spiro_tidak">Tidak (Skor 0)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card text-center mb-4" id="cardHasilPUMA">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Skor PUMA</h5>
+                    <h1 class="display-4 fw-bold" id="totalSkorPUMA">0</h1>
+                    <span class="badge bg-success fs-6 px-4 py-2" id="badgeHasilPUMA">Tidak Berisiko PPOK</span>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-primary btn-lg px-5" id="btnSimpanPPOK">
+                    <i class="fas fa-save me-2"></i>SIMPAN SKRINING PPOK
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="tab-pane fade" id="content-lansia" role="tabpanel">
+        <form id="formLansia">
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-primary">
+                    <i class="fas fa-wheelchair me-2"></i>Aktivitas Kehidupan Sehari-hari (AKS / Indeks Barthel)
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Pilih skor yang paling menggambarkan kondisi lansia saat ini.</p>
+                    
+                    <div class="accordion" id="accordionAKS">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks1">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks1">
+                                    1. Mengendalikan Rangsang BAB
+                                </button>
+                            </h2>
+                            <div id="c_aks1" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                    <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_bab" value="0" required> 0 - Tidak terkendali / tak teratur (perlu pencahar)</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_bab" value="1"> 1 - Kadang-kadang tak terkendali (1x/minggu)</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_bab" value="2"> 2 - Terkendali teratur</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks2">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks2">
+                                    2. Mengendalikan Rangsang BAK
+                                </button>
+                            </h2>
+                            <div id="c_aks2" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                     <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_bak" value="0" required> 0 - Tidak terkendali / pakai kateter</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_bak" value="1"> 1 - Kadang-kadang tak terkendali (1x/24 jam)</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_bak" value="2"> 2 - Mandiri</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks3">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks3">
+                                    3. Membersihkan Diri (cuci muka, sisir, sikat gigi)
+                                </button>
+                            </h2>
+                            <div id="c_aks3" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                     <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_diri" value="0" required> 0 - Butuh pertolongan orang lain</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_diri" value="1"> 1 - Mandiri</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks4">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks4">
+                                    4. Penggunaan WC (masuk/keluar, lepas/pakai celana, siram)
+                                </button>
+                            </h2>
+                            <div id="c_aks4" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                     <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_wc" value="0" required> 0 - Tergantung pertolongan orang lain</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_wc" value="1"> 1 - Perlu pertolongan pada beberapa kegiatan tetapi dapat mengerjakan sendiri beberapa kegiatan yang lain</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_wc" value="2"> 2 - Mandiri</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks5">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks5">
+                                    5. Makan Minum (jika harus berupa potongan dianggap dibantu)
+                                </button>
+                            </h2>
+                            <div id="c_aks5" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                     <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_makan" value="0" required> 0 - Tidak mampu</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_makan" value="1"> 1 - Perlu ditolong memotong makanan</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_makan" value="2"> 2 - Mandiri</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks6">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks6">
+                                    6. Bergerak dari kursi roda ke tempat tidur
+                                </button>
+                            </h2>
+                            <div id="c_aks6" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                     <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_gerak" value="0" required> 0 - Tidak mampu</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_gerak" value="1"> 1 - Perlu banyak bantuan untuk bisa duduk (2 orang)</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_gerak" value="2"> 2 - Bantuan minimal 1 orang</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_gerak" value="3"> 3 - Mandiri</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks7">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks7">
+                                    7. Berjalan di tempat rata
+                                </button>
+                            </h2>
+                            <div id="c_aks7" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                     <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_jalan" value="0" required> 0 - Tidak mampu</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_jalan" value="1"> 1 - Bisa (pindah) dengan kursi roda</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_jalan" value="2"> 2 - Berjalan dengan bantuan 1 orang</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_jalan" value="3"> 3 - Mandiri</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks8">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks8">
+                                    8. Berpakaian (termasuk pasang tali sepatu, kencangkan sabuk)
+                                </button>
+                            </h2>
+                            <div id="c_aks8" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                     <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_pakai" value="0" required> 0 - Tergantung orang lain</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_pakai" value="1"> 1 - Sebagian dibantu (misal mengancing baju)</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_pakai" value="2"> 2 - Mandiri</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks9">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks9">
+                                    9. Naik turun tangga
+                                </button>
+                            </h2>
+                            <div id="c_aks9" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                     <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_tangga" value="0" required> 0 - Tidak mampu</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_tangga" value="1"> 1 - Butuh pertolongan</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_tangga" value="2"> 2 - Mandiri</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h_aks10">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#c_aks10">
+                                    10. Mandi
+                                </button>
+                            </h2>
+                            <div id="c_aks10" class="accordion-collapse collapse" data-bs-parent="#accordionAKS">
+                                <div class="accordion-body">
+                                     <div class="list-group">
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_mandi" value="0" required> 0 - Tergantung orang lain</label>
+                                        <label class="list-group-item"><input class="form-check-input me-2" type="radio" name="aks_mandi" value="1"> 1 - Mandiri</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light text-center mt-4 mb-0 border">
+                        <h6 class="mb-2 text-muted">Total Skor AKS (Maks. 20)</h6>
+                        <h2 class="mb-2 fw-bold" id="totalSkorAKS">0</h2>
+                        <span id="hasilAKS" class="badge bg-secondary fs-6 px-3 py-2">Belum Lengkap</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-success">
+                    <i class="fas fa-brain me-2"></i>Skrining Lansia Sederhana (SKILAS)
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Jenis Skrining</th>
+                                    <th width="40%">Hasil Penilaian</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>A. Penurunan Kognitif</strong><br>
+                                        <ul class="mb-0 small text-muted ps-3">
+                                            <li>Mengingat 3 kata (contoh: bunga, pintu, nasi)</li>
+                                            <li>Orientasi waktu dan tempat</li>
+                                            <li>Mengulang ketiga kata tadi</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <select class="form-select" name="skilas_kognitif" required>
+                                            <option value="">Pilih Hasil...</option>
+                                            <option value="Normal">Normal (Bisa semua)</option>
+                                            <option value="Gangguan">Gangguan (Salah satu tidak bisa)</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>B. Keterbatasan Mobilitas</strong><br>
+                                        <small class="text-muted">Tes berdiri dari kursi tanpa bantuan tangan.</small>
+                                    </td>
+                                    <td>
+                                        <select class="form-select" name="skilas_mobilitas" required>
+                                            <option value="">Pilih Hasil...</option>
+                                            <option value="Normal">Bisa berdiri</option>
+                                            <option value="Gangguan">Tidak bisa berdiri / susah</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>C. Malnutrisi</strong><br>
+                                        <ul class="mb-0 small text-muted ps-3">
+                                            <li>BB berkurang > 3kg dlm 3 bln terakhir?</li>
+                                            <li>Hilang nafsu makan?</li>
+                                            <li>LILA < 23,5 cm?</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <select class="form-select" name="skilas_nutrisi" required>
+                                            <option value="">Pilih Hasil...</option>
+                                            <option value="Normal">Normal (Tidak semua)</option>
+                                            <option value="Kurang Gizi">Kurang Gizi (Salah satu Ya)</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>D. Gangguan Penglihatan</strong><br>
+                                        <small class="text-muted">Masalah mata / Tes melihat ada gangguan.</small>
+                                    </td>
+                                    <td>
+                                         <select class="form-select" name="skilas_mata" required>
+                                            <option value="">Pilih Hasil...</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="Gangguan">Ada Gangguan</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>E. Gangguan Pendengaran</strong><br>
+                                        <small class="text-muted">Tes berbisik ada gangguan.</small>
+                                    </td>
+                                    <td>
+                                         <select class="form-select" name="skilas_telinga" required>
+                                            <option value="">Pilih Hasil...</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="Gangguan">Ada Gangguan</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>F. Gejala Depresi</strong><br>
+                                        <small class="text-muted">Perasaan sedih / hilang minat dalam 2 minggu terakhir.</small>
+                                    </td>
+                                    <td>
+                                         <select class="form-select" name="skilas_depresi" required>
+                                            <option value="">Pilih Hasil...</option>
+                                            <option value="Normal">Tidak ada gejala</option>
+                                            <option value="Depresi">Ya (Ada gejala)</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                     <div class="alert alert-light text-center mb-0 border">
+                        <h6 class="mb-2 text-muted">Kesimpulan SKILAS</h6>
+                        <span id="hasilSKILAS" class="badge bg-secondary fs-6 px-3 py-2">Belum Lengkap</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-primary btn-lg px-5" id="btnSimpanLansia">
+                    <i class="fas fa-save me-2"></i>SIMPAN SKRINING LANSIA
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="tab-pane fade" id="content-balita" role="tabpanel">
+        <form id="formBalita">
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-info">
+                    <i class="fas fa-chart-line me-2"></i>Plotting Pertumbuhan (KMS)
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Status BB/U (Berat Badan menurut Umur)</label>
+                            <select class="form-select" name="plot_bbu" required>
+                                <option value="">Pilih Hasil Plotting...</option>
+                                <option value="BB tidak naik (T)">BB tidak naik (T)</option>
+                                <option value="BB kurang (BGM)">BB kurang (BGM)</option>
+                                <option value="BB normal, naik (N)">BB normal, naik (N)</option>
+                                <option value="BB lebih">BB lebih (di atas garis oranye)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Status TB/U (Tinggi Badan menurut Umur)</label>
+                            <select class="form-select" name="plot_tbu" required>
+                                <option value="">Pilih Hasil Plotting...</option>
+                                <option value="Sangat Pendek">Sangat Pendek (&lt; -3 SD)</option>
+                                <option value="Pendek">Pendek (&lt; -2 SD)</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Tinggi">Tinggi (&gt; +3 SD)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                             <label class="form-label small fw-bold">Status BB/TB (Gizi Akut)</label>
+                            <select class="form-select" name="plot_bbtb" required>
+                                <option value="">Pilih Hasil Plotting...</option>
+                                <option value="Gizi Buruk">Gizi Buruk (&lt; -3 SD)</option>
+                                <option value="Gizi Kurang">Gizi Kurang (&lt; -2 SD)</option>
+                                <option value="Gizi Baik">Gizi Baik (Normal)</option>
+                                <option value="Risiko Gizi Lebih">Risiko Gizi Lebih (&gt; +1 SD)</option>
+                                <option value="Gizi Lebih">Gizi Lebih (&gt; +2 SD)</option>
+                                <option value="Obesitas">Obesitas (&gt; +3 SD)</option>
+                            </select>
+                        </div>
+                         <div class="col-md-6">
+                             <label class="form-label small fw-bold">Status Lingkar Kepala</label>
+                            <select class="form-select" name="plot_lk" required>
+                                <option value="">Pilih Hasil Plotting...</option>
+                                <option value="Mikrosefali">Mikrosefali (Kecil)</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Makrosefali">Makrosefali (Besar)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-success">
+                    <i class="fas fa-syringe me-2"></i>Pelayanan Kesehatan
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">ASI Eksklusif?</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="asi_eksklusif" value="Ya" required> <label class="form-check-label">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="asi_eksklusif" value="Tidak"> <label class="form-check-label">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">MPASI Sesuai Umur?</label>
+                             <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mpasi" value="Ya" required> <label class="form-check-label">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mpasi" value="Tidak"> <label class="form-check-label">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <label class="form-label fw-bold small">Imunisasi Diberikan?</label>
+                             <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="imunisasi" value="Ya" required> <label class="form-check-label">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="imunisasi" value="Tidak" checked> <label class="form-check-label">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Vitamin A?</label>
+                             <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="vitamin_a" value="Ya" required> <label class="form-check-label">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="vitamin_a" value="Tidak" checked> <label class="form-check-label">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                             <label class="form-label fw-bold small">Obat Cacing?</label>
+                             <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="obat_cacing" value="Ya" required> <label class="form-check-label">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="obat_cacing" value="Tidak" checked> <label class="form-check-label">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                             <label class="form-label fw-bold small">Patuh Konsumsi MT?</label>
+                             <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mt_pemulihan" value="Ya" required> <label class="form-check-label">Ya</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mt_pemulihan" value="Tidak" checked> <label class="form-check-label">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-primary btn-lg px-5" id="btnSimpanBalita">
+                    <i class="fas fa-save me-2"></i>SIMPAN PELAYANAN BALITA
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="tab-pane fade" id="content-ibu" role="tabpanel">
+        <form id="formIbu">
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body bg-light">
+                    <label class="form-label fw-bold me-3">Status Saat Ini:</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="status_ibu" id="sts_hamil" value="Hamil" required>
+                        <label class="form-check-label fw-bold text-primary" for="sts_hamil">Ibu Hamil</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="status_ibu" id="sts_nifas" value="Nifas">
+                        <label class="form-check-label fw-bold text-success" for="sts_nifas">Ibu Nifas / Menyusui</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4 d-none" id="sectionHamil">
+                <div class="card-header bg-white fw-bold text-primary">
+                    <i class="fas fa-baby-carriage me-2"></i>Pelayanan Ibu Hamil
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Usia Kehamilan (Minggu)</label>
+                            <input type="number" class="form-control" name="usia_kehamilan" placeholder="Contoh: 24">
+                        </div>
+                        <div class="col-md-6">
+                             <label class="form-label small fw-bold">Status LILA (Auto dari Tab 1)</label>
+                             <input type="text" class="form-control bg-light" id="refLilaIbu" readonly placeholder="Isi LILA di Tab Rutin dulu">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Pemberian TTD (Tablet Tambah Darah)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="ttd_diberikan" placeholder="Jumlah Tablet">
+                                <span class="input-group-text">Butir</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Kepatuhan Konsumsi TTD</label>
+                            <select class="form-select" name="ttd_konsumsi">
+                                <option value="">Pilih...</option>
+                                <option value="Rutin">Rutin (Diminum setiap hari)</option>
+                                <option value="Tidak Rutin">Tidak Rutin</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold">Pemberian MT Bumil KEK</label>
+                            <select class="form-select" name="pmt_bumil_kek">
+                                <option value="">Pilih...</option>
+                                <option value="Ya">Ya (Diberikan Makanan Tambahan)</option>
+                                <option value="Tidak">Tidak</option>
+                            </select>
+                             <div class="form-text">Khusus untuk Bumil dengan LILA < 23.5 cm</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4 d-none" id="sectionNifas">
+                <div class="card-header bg-white fw-bold text-success">
+                    <i class="fas fa-breastfeeding me-2"></i>Pelayanan Ibu Nifas
+                </div>
+                <div class="card-body">
+                     <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Pemberian Vitamin A (Ibu Nifas)</label>
+                            <select class="form-select" name="vitamin_a_nifas">
+                                <option value="">Pilih...</option>
+                                <option value="Ya">Ya (Diberikan 2 Kapsul Merah)</option>
+                                <option value="Tidak">Tidak</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-primary btn-lg px-5" id="btnSimpanIbu">
+                    <i class="fas fa-save me-2"></i>SIMPAN PELAYANAN IBU
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="tab-pane fade" id="content-rematri" role="tabpanel">
+        <form id="formRematri">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold text-danger">
+                    <i class="fas fa-droplet me-2"></i>Skrining Anemia
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Kadar Hemoglobin (Hb)</label>
+                            <div class="input-group">
+                                <input type="number" step="0.1" class="form-control form-control-lg" id="inputHB" name="nilai_hb" placeholder="Contoh: 11.5" required>
+                                <span class="input-group-text">g/dL</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted">Status Anemia (Auto)</label>
+                            <div>
+                                <span id="hasilAnemia" class="badge bg-secondary fs-5 px-4 py-2">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-text mt-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Normal: Hb ≥ 12 g/dL. Jika dibawah 12 g/dL dianggap Anemia.
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-primary btn-lg px-5" id="btnSimpanRematri">
+                    <i class="fas fa-save me-2"></i>SIMPAN DATA REMATRI
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>

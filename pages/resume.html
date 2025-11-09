@@ -1,0 +1,93 @@
+<div class="row mb-4 no-print">
+    <div class="col-md-12 d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-secondary btn-sm" onclick="loadPage('pendaftaran', 'Kunjungan Hari Ini')">
+            <i class="fas fa-arrow-left me-2"></i>Kembali
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="window.print()">
+            <i class="fas fa-print me-2"></i>Cetak Resume
+        </button>
+    </div>
+</div>
+
+<div class="card shadow-sm" id="printableArea">
+    <div class="card-header bg-white text-center py-4">
+        <h4 class="fw-bold text-primary mb-0"><i class="fas fa-file-medical-alt me-2"></i>RESUME KUNJUNGAN ILP</h4>
+        <small class="text-muted" id="resumeTanggal">-</small>
+    </div>
+    <div class="card-body p-4">
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <table class="table table-borderless table-sm">
+                    <tr><td width="120px" class="text-muted">Nama Pasien</td><td class="fw-bold" id="resNama">-</td></tr>
+                    <tr><td class="text-muted">NIK</td><td id="resNIK">-</td></tr>
+                </table>
+            </div>
+             <div class="col-md-6">
+                <table class="table table-borderless table-sm">
+                    <tr><td width="120px" class="text-muted">Usia / JK</td><td id="resUmurJK">-</td></tr>
+                    <tr><td class="text-muted">Kategori ILP</td><td><span class="badge bg-primary" id="resKategori">-</span></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <hr>
+
+        <h6 class="fw-bold text-primary mb-3">A. Tanda Vital & Antropometri</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center">
+                    <small class="text-muted d-block">BB / TB</small>
+                    <span class="fw-bold" id="resBBTB">-</span>
+                </div>
+            </div>
+             <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center">
+                    <small class="text-muted d-block">IMT / Status Gizi</small>
+                    <span class="fw-bold" id="resIMT">-</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center">
+                    <small class="text-muted d-block">Tekanan Darah</small>
+                    <span class="fw-bold" id="resTD">-</span>
+                </div>
+            </div>
+             <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded text-center">
+                    <small class="text-muted d-block">Gula Darah</small>
+                    <span class="fw-bold" id="resGula">-</span>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="fw-bold text-primary mb-3">B. Hasil Skrining ILP</h6>
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Jenis Skrining</th>
+                        <th>Hasil / Kesimpulan</th>
+                        <th>Catatan</th>
+                    </tr>
+                </thead>
+                <tbody id="resumeSkriningBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="alert alert-light text-center small text-muted mt-5">
+            Dokumen ini dicetak komputer dari Aplikasi Siyanduku NG pada <span id="printDate"></span>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    @media print {
+        body * { visibility: hidden; }
+        #printableArea, #printableArea * { visibility: visible; }
+        #printableArea { position: absolute; left: 0; top: 0; width: 100%; border: none !important; box-shadow: none !important; }
+        .no-print { display: none !important; }
+    }
+</style>

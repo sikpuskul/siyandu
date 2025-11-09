@@ -101,3 +101,32 @@
         margin-left: -15rem;
     }
 }
+
+/* Styling untuk Nav Tabs agar lebih terlihat */
+.nav-tabs .nav-link {
+    background-color: #f8f9fa;      /* Latar abu-abu sangat muda */
+    border: 1px solid #dee2e6;      /* Border samar standard Bootstrap */
+    margin-right: 2px;              /* Jarak antar tab */
+    color: #0c3f72;                 /* Warna teks abu-abu (tidak mencolok) */
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-tabs .nav-link:hover:not(.disabled) {
+    background-color: #e9ecef;      /* Sedikit lebih gelap saat hover */
+    border-color: #c6c7c8;
+    color: var(--main-text-color);  /* Warnanya jadi hidup saat di-hover */
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #da9433 !important; /* Aktif tetap putih */
+    border-bottom-color: transparent !important; /* Hilangkan border bawah agar menyatu dengan konten */
+    color:  #ffffff !important; /* Warna teks utama */
+    font-weight: bold;
+}
+
+/* Khusus tab disabled agar terlihat beda */
+.nav-tabs .nav-link.disabled {
+    background-color: #e9ecef !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+}

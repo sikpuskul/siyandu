@@ -3,57 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tes Koneksi API e-Yandu</title>
+    <title>Tes API Lengkap - e-Yandu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="p-5">
-    <div class="card mb-3">
-        <div class="card-header">Tes Login (Skenario Sukses)</div>
-        <div class="card-body">
-            <p>Mencoba login sebagai <b>kader_mawar</b> di <b>PSY-005</b> dengan password <b>123456</b></p>
-            <button id="btnLoginSuccess" class="btn btn-success">Test Login Sukses</button>
-            <pre id="resultLoginSuccess" class="bg-light p-3 mt-2 border rounded">Menunggu...</pre>
-        </div>
-    </div>
+<body class="p-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4">Dashboard Testing API</h2>
 
-    <div class="card">
-        <div class="card-header">Tes Login (Skenario Gagal - Salah Posyandu)</div>
-        <div class="card-body">
-             <p>Mencoba login sebagai <b>kader_mawar</b> tapi di <b>PSY-006</b> (seharusnya gagal)</p>
-            <button id="btnLoginFail" class="btn btn-danger">Test Login Gagal</button>
-            <pre id="resultLoginFail" class="bg-light p-3 mt-2 border rounded">Menunggu...</pre>
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-primary text-white fw-bold">Tes 1: Ambil Daftar Desa</div>
+            <div class="card-body">
+                <button id="btnTestDesa" class="btn btn-primary">Get Desa</button>
+                <pre id="resultDesa" class="bg-light p-3 mt-2 border rounded">Menunggu...</pre>
+            </div>
+        </div>
+
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-success text-white fw-bold">Tes 2: Ambil Posyandu</div>
+            <div class="card-body">
+                <div class="input-group mb-2">
+                    <span class="input-group-text">Nama Desa</span>
+                    <input type="text" id="inputDesa" class="form-control" value="Desa Sukamaju">
+                    <button id="btnTestPosyandu" class="btn btn-success">Get Posyandu</button>
+                </div>
+                <pre id="resultPosyandu" class="bg-light p-3 mt-2 border rounded">Menunggu...</pre>
+            </div>
+        </div>
+
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-info text-white fw-bold">Tes 3: Get Kunjungan Hari Ini (Dashboard)</div>
+            <div class="card-body">
+                <div class="alert alert-warning small py-2">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Pastikan Anda sudah <b>Login</b> di aplikasi utama (<code>login.html</code>) agar token tersedia di Local Storage.
+                </div>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">Tanggal</span>
+                    <input type="date" id="testDate" class="form-control">
+                    <button id="btnTestKunjungan" class="btn btn-info text-white">Lihat Kunjungan</button>
+                </div>
+                <pre id="resultKunjungan" class="bg-light p-3 mt-2 border rounded">Menunggu...</pre>
+            </div>
         </div>
     </div>
 
     <script src="assets/js/api.js"></script>
+
     <script>
-        // TES LOGIN SUKSES
-        document.getElementById('btnLoginSuccess').addEventListener('click', async () => {
-            document.getElementById('resultLoginSuccess').textContent = "Loading...";
-            // Sesuaikan posyanduId dengan data di db_posyandu dan db_users Anda
-            const res = await callApi('login', { 
-                username: 'kader_mawar', 
-                password: '123456',
-                posyanduId: 'PSY-005' 
-            });
-            document.getElementById('resultLoginSuccess').textContent = JSON.stringify(res, null, 2);
-            
-            // Jika sukses, kita simpan tokennya untuk tes selanjutnya (simulasi frontend beneran)
-            if (res.status === 'success') {
-                localStorage.setItem('sessionToken', res.data.token);
-                console.log("Token tersimpan di localStorage:", res.data.token);
-            }
+        // Set default tanggal hari ini untuk Tes 3
+        document.getElementById('testDate').valueAsDate = new Date();
+
+        // --- TES 1: GET DESA ---
+        document.getElementById('btnTestDesa').addEventListener('click', async () => {
+            document.getElementById('resultDesa').textContent = "Loading...";
+            const res = await callApi('getDaftarDesa');
+            document.getElementById('resultDesa').textContent = JSON.stringify(res, null, 2);
         });
 
-        // TES LOGIN GAGAL
-        document.getElementById('btnLoginFail').addEventListener('click', async () => {
-            document.getElementById('resultLoginFail').textContent = "Loading...";
-            const res = await callApi('login', { 
-                username: 'kader_mawar', 
-                password: '123456',
-                posyanduId: 'PSY-006' // Salah Posyandu
-            });
-            document.getElementById('resultLoginFail').textContent = JSON.stringify(res, null, 2);
+        // --- TES 2: GET POSYANDU ---
+        document.getElementById('btnTestPosyandu').addEventListener('click', async () => {
+            const desa = document.getElementById('inputDesa').value;
+            document.getElementById('resultPosyandu').textContent = "Loading...";
+            const res = await callApi('getPosyanduByDesa', { desa: desa });
+            document.getElementById('resultPosyandu').textContent = JSON.stringify(res, null, 2);
+        });
+
+        // --- TES 3: GET KUNJUNGAN ---
+        document.getElementById('btnTestKunjungan').addEventListener('click', async () => {
+            const tgl = document.getElementById('testDate').value;
+            document.getElementById('resultKunjungan').textContent = "Loading...";
+            // Token otomatis diambil oleh api.js dari localStorage
+            const res = await callApi('getPendaftaranByDate', { date: tgl });
+            document.getElementById('resultKunjungan').textContent = JSON.stringify(res, null, 2);
         });
     </script>
 </body>
