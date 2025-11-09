@@ -201,8 +201,15 @@ function checkAuth() {
 }
 
 function updateUserUI(user) {
-    $("#user-fullname").text(user.namaLengkap);
-    $("#user-posyandu-info").text("Unit: " + user.posyanduId);
+    $("#user-fullname").html(`
+        ${user.namaLengkap} 
+        <div style="font-size: 0.75rem; opacity: 0.8; font-weight: normal;">
+            ${user.namaPosyandu} - ${user.namaDesa}
+        </div>
+    `);
+
+    // Info di Dropdown (Opsional, bisa disederhanakan karena sudah muncul di atas)
+    $("#user-posyandu-info").text(`ID Unit: ${user.posyanduId}`);
 
     // --- LOGIKA MENU ADMIN ---
     // Tampilkan menu laporan HANYA jika role adalah 'admin_posyandu' atau 'admin_puskesmas'
@@ -261,7 +268,7 @@ async function loadPage(pageName, pageTitle) {
         const initFunctionName = `init_${pageName}`;
         if (typeof window[initFunctionName] === 'function') {
              // Panggil fungsi init jika ada (nanti kita buat di file terpisah atau inline)
-             console.log(`Memanggil fungsi: ${initFunctionName}`);
+             //console.log(`Memanggil fungsi: ${initFunctionName}`);
              window[initFunctionName]();
         }
 
@@ -629,7 +636,7 @@ $(document).ready(function() {
             status_nifas: $('[name="status_nifas"]').val()
         };
 
-        console.log("[DEBUG Pendaftaran] Data:", pendaftaranData);
+        //console.log("[DEBUG Pendaftaran] Data:", pendaftaranData);
 
         // 3. Loading UI
         const btn = $(this);
@@ -824,7 +831,7 @@ window.init_periksa = function() {
                 // 3. Ubah Tombol jadi UPDATE
                 setButtonMode('#btnSimpanRutin', 'update');
                 
-                console.log("Data pemeriksaan rutin dimuat dari server.");
+                //console.log("Data pemeriksaan rutin dimuat dari server.");
             } else {
                 // Belum ada data di server, coba cek draft lokal
                 muatDraftLokal();
@@ -1370,7 +1377,7 @@ window.init_periksa = function() {
             
             // Trigger perhitungan setelah muat draft
             hitungOtomatis();
-            console.log("Draft lokal dimuat untuk ID:", pasienActive.id_pendaftaran);
+            //console.log("Draft lokal dimuat untuk ID:", pasienActive.id_pendaftaran);
         }
     }
 
@@ -1414,7 +1421,7 @@ $(document).on('click', '#btnSimpanRutin', async function(e) {
     // Bersihkan status gula jika isinya masih strip '-'
     if (dataRutin.status_gula === '-') dataRutin.status_gula = '';
 
-    console.log("[DEBUG Rutin] Data yang dikirim:", dataRutin);
+    //console.log("[DEBUG Rutin] Data yang dikirim:", dataRutin);
 
     // 3. Loading UI
     const btn = $(this);
@@ -1488,7 +1495,7 @@ $(document).on('click', '#btnSimpanTBC', async function(e) {
         kontak: $('input[name="tbc_kontak"]:checked').val()
     };
 
-    console.log("[DEBUG TBC] Sending:", dataTBC);
+    //console.log("[DEBUG TBC] Sending:", dataTBC);
 
     // 4. Loading UI
     const btn = $(this);
@@ -1560,7 +1567,7 @@ $(document).on('click', '#btnSimpanIndera', async function(e) {
         telinga_kiri: $('input[name="telinga_kiri"]:checked').val()
     };
 
-    console.log("[DEBUG INDERA] Sending:", dataIndera);
+    //console.log("[DEBUG INDERA] Sending:", dataIndera);
 
     const btn = $(this);
     const originalHtml = btn.html();
@@ -1621,7 +1628,7 @@ $(document).on('click', '#btnSimpanPPOK', async function(e) {
         spirometri: $('input[name="puma_spiro"]:checked').val()
     };
 
-    console.log("[DEBUG PPOK] Sending:", dataPPOK);
+    //console.log("[DEBUG PPOK] Sending:", dataPPOK);
     const btn = $(this);
     const originalHtml = btn.html();
     btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...');
@@ -1666,7 +1673,7 @@ $(document).on('click', '#btnSimpanLansia', async function(e) {
     formData.id_pasien = activeData.id_pasien;
     formData.tanggal_skrining = getTodayDate();
 
-    console.log("[DEBUG Lansia] Sending:", formData);
+    //console.log("[DEBUG Lansia] Sending:", formData);
 
     const btn = $(this);
     const originalHtml = btn.html();
@@ -1709,7 +1716,7 @@ $(document).on('click', '#btnSimpanBalita', async function(e) {
     formData.id_pasien = activeData.id_pasien;
     formData.tanggal_pelayanan = getTodayDate();
 
-    console.log("[DEBUG Balita] Sending:", formData);
+    //console.log("[DEBUG Balita] Sending:", formData);
     const btn = $(this); const originalHtml = btn.html();
     btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...');
 
@@ -1741,7 +1748,7 @@ $(document).on('click', '#btnSimpanIbu', async function(e) {
     formData.id_pasien = activeData.id_pasien;
     formData.tanggal_pelayanan = getTodayDate();
 
-    console.log("[DEBUG Ibu] Sending:", formData);
+    //console.log("[DEBUG Ibu] Sending:", formData);
     const btn = $(this); const originalHtml = btn.html();
     btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...');
 
@@ -1780,7 +1787,7 @@ $(document).on('click', '#btnSimpanRematri', async function(e) {
         nilai_hb: hbVal
     };
 
-    console.log("[DEBUG Rematri] Sending:", dataRematri);
+    //console.log("[DEBUG Rematri] Sending:", dataRematri);
     const btn = $(this); const originalHtml = btn.html();
     btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...');
 
@@ -1964,11 +1971,11 @@ window.init_dashboard = async function() {
             // --- DEBUG LOGGING ---
             if (d.debug_info && d.debug_info.length > 0) {
                 console.group("🕵️ DASHBOARD INVESTIGATION REPORT");
-                console.log("Backend membaca data berikut dari 5 kunjungan pertama bulan ini:");
+                //console.log("Backend membaca data berikut dari 5 kunjungan pertama bulan ini:");
                 console.table(d.debug_info);
                 console.groupEnd();
             } else {
-                console.log("🕵️ Dashboard: Tidak ada kunjungan bulan ini untuk diinvestigasi.");
+                //console.log("🕵️ Dashboard: Tidak ada kunjungan bulan ini untuk diinvestigasi.");
             }
             // ---------------------
             
@@ -2162,5 +2169,15 @@ window.init_laporan = function() {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+    }
+}
+
+// --- HALAMAN WELCOME (BERANDA) ---
+window.init_welcome = function() {
+    // Pastikan data user tersedia
+    if (currentUser) {
+        // Format: "Posyandu Mawar desa Sukamaju"
+        const unitText = `Posyandu ${currentUser.namaPosyandu} desa ${currentUser.namaDesa}`;
+        $('#welcomeUnit').text(unitText);
     }
 }

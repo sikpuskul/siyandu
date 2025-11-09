@@ -11,7 +11,7 @@ async function callApi(action, payload = {}) {
         ...payload
     };
 
-    console.log(`[API REQ] ${action}:`, dataToSend);
+    //console.log(`[API REQ] ${action}:`, dataToSend);
 
     try {
         const response = await fetch(API_URL, {
@@ -31,7 +31,7 @@ async function callApi(action, payload = {}) {
         try {
             // Coba ubah teks tadi ke JSON
             const jsonResult = JSON.parse(textResult);
-            console.log(`[API RES] ${action}:`, jsonResult);
+            //console.log(`[API RES] ${action}:`, jsonResult);
             return jsonResult;
         } catch (e) {
             // JIKA GAGAL PARSE JSON, BERARTI SERVER KIRIM HTML ERROR
