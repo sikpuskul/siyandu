@@ -203,6 +203,16 @@ function checkAuth() {
 function updateUserUI(user) {
     $("#user-fullname").text(user.namaLengkap);
     $("#user-posyandu-info").text("Unit: " + user.posyanduId);
+
+    // --- LOGIKA MENU ADMIN ---
+    // Tampilkan menu laporan HANYA jika role adalah 'admin_posyandu' atau 'admin_puskesmas'
+    // Sesuaikan dengan value role yang Anda pakai di db_users.
+    // Misal kita pakai standar: 'admin' (umum) atau cek spesifik.
+    if (user.role === 'admin' || user.role === 'admin_posyandu' || user.role === 'admin_puskesmas') {
+        $('#menu-laporan').show();
+    } else {
+        $('#menu-laporan').hide();
+    }
 }
 
 function forceLogout() {
@@ -2021,5 +2031,136 @@ window.init_dashboard = async function() {
     } catch (e) {
         console.error(e);
         $('#app-content').html('<div class="alert alert-danger">Gagal memuat dashboard.</div>');
+    }
+}
+
+// --- HALAMAN LAPORAN ---
+window.init_laporan = function() {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // 1. Set Default Tanggal (Hari ini)
+    $('#tglAwal').val(today);
+    $('#tglAkhir').val(today);
+    // Set max date agar tidak bisa pilih tanggal masa depan
+    $('#tglAwal').attr('max', today);
+    $('#tglAkhir').attr('max', today);
+
+    // 2. Validasi Pintar Tanggal
+    $('#tglAwal, #tglAkhir').on('change', function() {
+        validasiTanggal();
+    });
+
+    function validasiTanggal() {
+        const tglAwal = new Date($('#tglAwal').val());
+        const tglAkhir = new Date($('#tglAkhir').val());
+        const btnUnduh = $('#btnUnduhCSV');
+        const errMssg = $('#tglError');
+
+        // Reset state
+        btnUnduh.prop('disabled', true);
+        errMssg.addClass('d-none');
+
+        // Validasi dasar
+        if (!isValidDate(tglAwal) || !isValidDate(tglAkhir)) return;
+
+        // Validasi 1: Tanggal Akhir tidak boleh kurang dari Tanggal Awal
+        if (tglAkhir < tglAwal) {
+            $('#tglAkhir').val($('#tglAwal').val()); // Auto-koreksi
+            validasiTanggal(); // Re-validate
+            return;
+        }
+
+        // Validasi 2: Maksimal 30 Hari
+        const diffTime = Math.abs(tglAkhir - tglAwal);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+        if (diffDays > 30) {
+            errMssg.removeClass('d-none').text(`Rentang dipilih: ${diffDays} hari. Maksimal 30 hari.`);
+        } else {
+            // Semua oke, aktifkan tombol jika jenis laporan sudah dipilih
+            if ($('#jenisLaporan').val()) {
+                btnUnduh.prop('disabled', false);
+            }
+        }
+    }
+
+    // Helper cek valid date
+    function isValidDate(d) { return d instanceof Date && !isNaN(d); }
+
+    // Event Listener Jenis Laporan
+    $('#jenisLaporan').on('change', function() {
+        validasiTanggal();
+    });
+
+    // --- 3. PROSES UNDUH CSV ---
+    $('#btnUnduhCSV').on('click', async function() {
+        const jenis = $('#jenisLaporan').val();
+        const tglAwal = $('#tglAwal').val();
+        const tglAkhir = $('#tglAkhir').val();
+        const btn = $(this);
+        const originalHtml = btn.html();
+
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses Data...');
+
+        try {
+            // Panggil API
+            const response = await callApi('getLaporanData', {
+                jenis_laporan: jenis,
+                tgl_awal: tglAwal,
+                tgl_akhir: tglAkhir
+            });
+
+            if (response.status === 'success') {
+                if (response.data.length === 0) {
+                     Swal.fire('Info', 'Tidak ada data pada rentang tanggal tersebut.', 'info');
+                } else {
+                    // Konversi JSON ke CSV dan Download
+                    downloadCSV(response.data, `Laporan_${jenis}_${tglAwal}_${tglAkhir}.csv`);
+                }
+            } else {
+                Swal.fire('Gagal', response.message, 'error');
+            }
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Gagal memuat data laporan.', 'error');
+        } finally {
+            btn.prop('disabled', false).html(originalHtml);
+        }
+    });
+
+    // --- HELPER: DOWNLOAD CSV ---
+    function downloadCSV(jsonData, filename) {
+        if (jsonData.length === 0) return;
+
+        // Ambil header dari key objek pertama
+        const headers = Object.keys(jsonData[0]);
+        const csvRows = [];
+        
+        // Tambahkan header ke baris pertama
+        csvRows.push(headers.join(','));
+
+        // Loop data
+        for (const row of jsonData) {
+            const values = headers.map(header => {
+                const escaped = ('' + row[header]).replace(/"/g, '\\"'); // Escape tanda kutip
+                return `"${escaped}"`; // Bungkus setiap nilai dengan tanda kutip
+            });
+            csvRows.push(values.join(','));
+        }
+
+        // Buat file blob
+        const csvString = csvRows.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        
+        // Buat link download sementara
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', filename);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 }

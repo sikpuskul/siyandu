@@ -1,0 +1,57 @@
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="fw-bold text-primary"><i class="fas fa-file-export me-2"></i>Laporan & Ekspor Data</h2>
+        <p class="text-muted">Unduh data kegiatan Posyandu untuk pelaporan bulanan.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-filter me-2"></i>Filter Laporan</h5>
+    </div>
+    <div class="card-body p-4">
+        <form id="formLaporan">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small">Jenis Laporan</label>
+                    <select class="form-select" id="jenisLaporan" required>
+                        <option value="">Pilih Jenis...</option>
+                        <option value="register">1. Register Kunjungan Harian</option>
+                        <option value="tbc">2. Rekap Skrining TBC</option>
+                        <option value="indera">3. Rekap Skrining Indera</option>
+                        <option value="jiwa">4. Rekap Skrining Jiwa (Lansia)</option>
+                        <option value="bumil_risti">5. Data Bumil KEK / Risti</option>
+                        </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small">Tanggal Awal</label>
+                    <input type="date" class="form-control" id="tglAwal" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small">Tanggal Akhir</label>
+                    <input type="date" class="form-control" id="tglAkhir" required>
+                     <div class="form-text text-danger d-none" id="tglError">
+                        Maksimal rentang 30 hari.
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-success px-4" id="btnUnduhCSV" disabled>
+                    <i class="fas fa-file-csv me-2"></i>UNDUH CSV (Excel)
+                </button>
+                </div>
+        </form>
+    </div>
+</div>
+
+<div class="alert alert-info mt-4">
+    <h5><i class="fas fa-info-circle me-2"></i>Catatan:</h5>
+    <ul class="mb-0">
+        <li>File **CSV** dapat dibuka langsung menggunakan Microsoft Excel atau Google Sheets.</li>
+        <li>Untuk menjaga performa sistem, rentang data maksimal yang dapat diunduh adalah **30 hari**.</li>
+    </ul>
+</div>
