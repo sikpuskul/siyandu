@@ -14,22 +14,24 @@ $(document).ready(function () {
     });
 
     // 3. Event Listener untuk Navigasi Menu
-    $(".list-group-item-action[data-page]").click(function (e) {
+    $(document).on('click', '[data-page]', function (e) {
         e.preventDefault();
         
-        // Hapus kelas active dari semua menu
+        // Hapus kelas active dari semua menu sidebar
         $(".list-group-item-action").removeClass("active");
-        // Tambahkan kelas active ke menu yang diklik
-        $(this).addClass("active");
+        // Jika yang diklik adalah menu sidebar, aktifkan visualnya
+        if ($(this).hasClass('list-group-item-action')) {
+            $(this).addClass("active");
+        }
 
         const page = $(this).data("page");
-        const title = $(this).text().trim();
+        // Ambil judul dari teks menu, atau default jika kosong
+        const title = $(this).text().trim() || 'Siyanduku NG';
         
-        // Muat halaman
         loadPage(page, title);
 
-        // Di mobile, otomatis tutup sidebar setelah klik menu
-        if ($(window).width() <= 768) {
+        // Di mobile, otomatis tutup sidebar jika klik menu (hanya jika yang diklik ada di sidebar)
+        if ($(window).width() <= 768 && $(this).closest('#sidebar-wrapper').length > 0) {
              $("#wrapper").removeClass("toggled");
         }
     });
@@ -392,7 +394,11 @@ window.init_pasien = function() {
                     <td>${p.umur} Thn</td>
                     <td>${p.alamat}</td>
                     <td class="text-end pe-4">
-                        ${btnDaftar} <button class="btn btn-sm btn-outline-primary me-1" onclick="editPasien('${p.id}')" title="Edit">
+                        ${btnDaftar} 
+                        <button class="btn btn-sm btn-info text-white me-1" onclick="showRiwayat('${p.id}', '${p.nama.replace(/'/g, "\\'")}')" title="Lihat Riwayat">
+                            <i class="fas fa-history"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editPasien('${p.id}')" title="Edit">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button class="btn btn-sm btn-outline-danger" onclick="hapusPasien('${p.id}', '${p.nama.replace(/'/g, "\\'")}')" title="Hapus">
@@ -2172,12 +2178,467 @@ window.init_laporan = function() {
     }
 }
 
+// --- GLOBAL: LIHAT RIWAYAT PASIEN ---
+window.showRiwayat = async function(idPasien, namaPasien) {
+    $('#riwayatNamaPasien').text("Riwayat: " + namaPasien);
+    const tbody = $('#tabelRiwayatBody');
+    tbody.html('<tr><td colspan="4" class="text-center py-3"><div class="spinner-border spinner-border-sm text-info" role="status"></div> Memuat riwayat...</td></tr>');
+    
+    new bootstrap.Modal(document.getElementById('modalRiwayat')).show();
+
+    try {
+        const response = await callApi('getRiwayatPasien', { id: idPasien });
+        if (response.status === 'success') {
+            tbody.empty();
+            if (response.data.length === 0) {
+                tbody.html('<tr><td colspan="4" class="text-center text-muted fst-italic">Belum ada riwayat kunjungan.</td></tr>');
+                return;
+            }
+
+            response.data.forEach(r => {
+                // Cek apakah ada rujukan
+                let statusBadge = '';
+                if (r.status_rujukan === 'Ya') {
+                    statusBadge = '<span class="badge bg-danger me-1">Dirujuk</span>';
+                }
+                
+                // Badge status layanan
+                let layananBadge = 'bg-warning text-dark';
+                if (r.status_layanan === 'Selesai') layananBadge = 'bg-success';
+                statusBadge += `<span class="badge ${layananBadge}">${r.status_layanan}</span>`;
+
+                tbody.append(`
+                    <tr>
+                        <td>${r.tanggal}</td>
+                        <td>${r.kategori}</td>
+                        <td>${statusBadge}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary" onclick="tutupModalRiwayatDanBukaResume('${r.id_pendaftaran}')">
+                                <i class="fas fa-file-medical-alt me-1"></i>Detail
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+
+        } else {
+             tbody.html(`<tr><td colspan="4" class="text-danger text-center">${response.message}</td></tr>`);
+        }
+    } catch (e) {
+        tbody.html(`<tr><td colspan="4" class="text-danger text-center">Gagal memuat data.</td></tr>`);
+    }
+}
+
+// Helper kecil agar modal riwayat tertutup dulu sebelum pindah halaman ke Resume
+window.tutupModalRiwayatDanBukaResume = function(idPendaftaran) {
+    bootstrap.Modal.getInstance(document.getElementById('modalRiwayat')).hide();
+    // Beri jeda sedikit agar animasi modal selesai
+    setTimeout(() => {
+        viewResume(idPendaftaran);
+    }, 300);
+}
+
+// --- HALAMAN PENGATURAN ---
+window.init_pengaturan = function() {
+    // 1. Cek Role untuk Tampilan Tab Admin
+    if (currentUser.role === 'admin' || currentUser.role === 'admin_posyandu' || currentUser.role === 'admin_puskesmas') {
+        $('.admin-only').removeClass('d-none');
+    }
+
+    // --- A. LOGIKA GANTI PASSWORD (SEMUA USER) ---
+    $('#formGantiPass').on('submit', async function(e) {
+        e.preventDefault();
+        
+        const oldPass = $('#oldPass').val();
+        const newPass = $('#newPass').val();
+        const confirmPass = $('#confirmPass').val();
+
+        // Validasi Frontend Sederhana
+        if (newPass.length < 6) {
+            Swal.fire('Peringatan', 'Password baru minimal 6 karakter.', 'warning');
+            return;
+        }
+        if (newPass !== confirmPass) {
+            Swal.fire('Peringatan', 'Konfirmasi password baru tidak cocok.', 'warning');
+            return;
+        }
+
+        // Loading UI
+        const btn = $('#btnSubmitPass');
+        const originalText = btn.html();
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...');
+
+        try {
+            // Panggil API changePassword
+            const response = await callApi('changePassword', {
+                oldPass: oldPass,
+                newPass: newPass
+            });
+
+            if (response.status === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Password Anda telah diubah. Silakan login ulang dengan password baru.',
+                    confirmButtonText: 'OK, Logout'
+                }).then(() => {
+                    logout(); // Paksa logout agar aman
+                });
+            } else {
+                Swal.fire('Gagal', response.message, 'error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
+        } finally {
+            btn.prop('disabled', false).html(originalText);
+        }
+    });
+
+    // --- B. MANAJEMEN POSYANDU ---
+    let curPagePos = 1;
+    let curSearchPos = '';
+
+    $('#tab-posyandu').on('shown.bs.tab', () => loadPosyanduTable(1));
+    
+    // Listener Search Posyandu (Debounce sederhana)
+    let debouncePos;
+    $('#searchPosyandu').on('keyup', function() {
+        clearTimeout(debouncePos);
+        debouncePos = setTimeout(() => {
+            curSearchPos = $(this).val().trim();
+            loadPosyanduTable(1);
+        }, 500);
+    });
+
+    async function loadPosyanduTable(page) {
+        curPagePos = page;
+        $('#tbodyPosyandu').html('<tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary mb-2" role="status"></div><p class="mb-0">Memuat...</p></td></tr>');
+        
+        try {
+            const res = await callApi('getPaginatedPosyandu', { page: page, search: curSearchPos });
+            if (res.status === 'success') {
+                const tbody = $('#tbodyPosyandu');
+                tbody.empty();
+                if (res.data.posyandu.length === 0) {
+                    tbody.html('<tr><td colspan="5" class="text-center text-muted fst-italic py-4">Tidak ada data ditemukan.</td></tr>');
+                } else {
+                    res.data.posyandu.forEach(p => {
+                        tbody.append(`
+                            <tr>
+                                <td class="ps-4 fw-bold">${p.id}</td>
+                                <td>${p.nama}</td>
+                                <td>${p.desa}</td>
+                                <td><code class="small">${p.spreadsheet_id ? p.spreadsheet_id.substring(0, 10) + '...' : '-'}</code></td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editPosyandu('${p.id}', '${p.nama}', '${p.desa}', '${p.spreadsheet_id}')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="hapusPosyandu('${p.id}', '${p.nama}')"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                }
+                // Render Pagination
+                renderPaginationUniversal(res.data.pagination, '#pagContainerPos', '#pagInfoPos', '#pagLinksPos', loadPosyanduTable);
+
+            } else { $('#tbodyPosyandu').html(`<tr><td colspan="5" class="text-danger text-center py-4">${res.message}</td></tr>`); }
+        } catch (e) { $('#tbodyPosyandu').html(`<tr><td colspan="5" class="text-danger text-center py-4">Gagal terhubung.</td></tr>`); }
+    }
+
+    // 3. Listener Tombol Simpan Posyandu (Modal)
+    $('#btnSimpanPosyandu').on('click', async function() {
+        const id = $('#editPosyanduId').val();
+        const nama = $('#inputNamaPos').val().trim();
+        const desa = $('#inputDesaPos').val().trim();
+        const ssid = $('#inputSpreadsheetId').val().trim();
+
+        if (!nama || !desa || !ssid) {
+            Swal.fire('Peringatan', 'Semua field harus diisi.', 'warning');
+            return;
+        }
+
+        const btn = $(this);
+        const originalText = btn.html();
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...');
+
+        try {
+            const response = await callApi('savePosyandu', {
+                data: { id: id, nama: nama, desa: desa, spreadsheet_id: ssid }
+            });
+
+            if (response.status === 'success') {
+                bootstrap.Modal.getInstance(document.getElementById('modalPosyandu')).hide();
+                Swal.fire({ icon: 'success', title: 'Berhasil', text: response.message, timer: 1500, showConfirmButton: false });
+                loadPosyanduTable(); // Reload tabel
+            } else {
+                Swal.fire('Gagal', response.message, 'error');
+            }
+        } catch (e) {
+            Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
+        } finally {
+            btn.prop('disabled', false).html(originalText);
+        }
+    });
+
+    // --- C. MANAJEMEN USER ---
+    let curPageUser = 1;
+    let curSearchUser = '';
+
+    // Saat tab Users dibuka: Load Tabel User DAN Load Dropdown Posyandu
+    $('#tab-users').on('shown.bs.tab', async function() {
+        loadUserTable(1);
+        loadUnitKerjaDropdown();
+    });
+
+    // Fungsi untuk mengisi dropdown Unit Kerja di Modal User
+    async function loadUnitKerjaDropdown() {
+        const dropdown = $('#inputUnitKerja');
+        // Jangan muat ulang jika sudah ada isinya > 2 (Pilih... + GLOBAL + data)
+        if (dropdown.children('option').length > 2) return; 
+
+        try {
+             // PANGGIL API BARU YANG TIDAK TER-PAGINASI
+             const response = await callApi('getAllPosyanduDropdown');
+             
+             if (response.status === 'success') {
+                 // Reset tapi sisakan opsi default
+                 dropdown.html('<option value="">Pilih...</option><option value="GLOBAL">GLOBAL (Khusus Admin)</option>');
+                 
+                 response.data.forEach(pos => {
+                     // pos.display_name sudah kita format di backend tadi
+                     dropdown.append(new Option(pos.display_name, pos.id));
+                 });
+             }
+        } catch (e) {
+            console.error("Gagal load dropdown posyandu", e);
+        }
+    }
+
+    let debounceUser;
+    $('#searchUser').on('keyup', function() {
+        clearTimeout(debounceUser);
+        debounceUser = setTimeout(() => {
+            curSearchUser = $(this).val().trim();
+            loadUserTable(1);
+        }, 500);
+    });
+
+    async function loadUserTable(page) {
+        curPageUser = page;
+        $('#tbodyUsers').html('<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary mb-2" role="status"></div><p class="mb-0">Memuat...</p></td></tr>');
+
+        try {
+            const res = await callApi('getPaginatedUsers', { page: page, search: curSearchUser });
+            if (res.status === 'success') {
+                const tbody = $('#tbodyUsers');
+                tbody.empty();
+                if (res.data.users.length === 0) {
+                    tbody.html('<tr><td colspan="6" class="text-center text-muted fst-italic py-4">Tidak ada data user.</td></tr>');
+                } else {
+                    res.data.users.forEach(u => {
+                        let badgeStatus = u.status === 'active' || u.status === 'Aktif' ? 'bg-success' : 'bg-secondary';
+                        tbody.append(`
+                            <tr>
+                                <td class="ps-4 fw-bold">${u.username}</td>
+                                <td>${u.nama_lengkap}</td>
+                                <td><span class="badge bg-info text-dark">${u.role}</span></td>
+                                <td>${u.posyandu_id}</td>
+                                <td><span class="badge ${badgeStatus}">${u.status}</span></td>
+                                <td class="text-end pe-4">
+                                     <button class="btn btn-sm btn-outline-primary" onclick="editUser('${u.id}', '${u.username}', '${u.role}', '${u.posyandu_id}', '${u.nama_lengkap}', '${u.status}')"><i class="fas fa-user-edit"></i></button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                }
+                renderPaginationUniversal(res.data.pagination, '#pagContainerUser', '#pagInfoUser', '#pagLinksUser', loadUserTable);
+            } else { $('#tbodyUsers').html(`<tr><td colspan="6" class="text-danger text-center">${res.message}</td></tr>`); }
+        } catch (e) { $('#tbodyUsers').html(`<tr><td colspan="6" class="text-danger text-center">Gagal terhubung.</td></tr>`); }
+    }
+
+    // Listener Tombol Simpan User (Modal)
+    $('#btnSimpanUser').on('click', async function() {
+        // Ambil data dari form
+        const userData = {
+            id: $('#editUserId').val(),
+            username: $('#inputUsername').val().trim(),
+            role: $('#inputRole').val(),
+            posyandu_id: $('#inputUnitKerja').val(),
+            nama_lengkap: $('#inputNamaLengkap').val().trim(),
+            password: $('#inputUserPass').val(), // Bisa kosong jika edit
+            status: $('#inputStatus').val()
+        };
+
+        // Validasi sederhana
+        if (!userData.username || !userData.role || !userData.posyandu_id || !userData.nama_lengkap) {
+            Swal.fire('Peringatan', 'Semua field bertanda * wajib diisi.', 'warning');
+            return;
+        }
+        // Validasi khusus user baru wajib ada password
+        if (!userData.id && !userData.password) {
+             Swal.fire('Peringatan', 'User baru wajib memiliki password.', 'warning');
+             return;
+        }
+
+        const btn = $(this);
+        const originalText = btn.html();
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...');
+
+        try {
+            const response = await callApi('saveUser', { data: userData });
+
+            if (response.status === 'success') {
+                bootstrap.Modal.getInstance(document.getElementById('modalUser')).hide();
+                Swal.fire({ icon: 'success', title: 'Berhasil', text: response.message, timer: 1500, showConfirmButton: false });
+                loadUserTable(curPageUser); // Reload tabel user
+            } else {
+                Swal.fire('Gagal', response.message, 'error');
+            }
+        } catch (e) {
+            Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
+        } finally {
+            btn.prop('disabled', false).html(originalText);
+        }
+    });
+}
+
+
+
+// Helper: Render Pagination Universal (DIPERBAIKI: Menggunakan data-page-num agar tidak bentrok dengan router)
+function renderPaginationUniversal(pagination, containerId, infoId, linksId, onClickCallback) {
+    const container = $(containerId);
+    const info = $(infoId);
+    const links = $(linksId);
+
+    if (pagination.totalRows === 0) {
+        container.css('visibility', 'hidden');
+        return;
+    }
+    container.css('visibility', 'visible');
+    
+    const start = (pagination.currentPage - 1) * 10 + 1; 
+    const end = Math.min(start + 9, pagination.totalRows);
+    info.text(`Menampilkan ${start}-${end} dari ${pagination.totalRows} data`);
+
+    links.empty();
+    
+    // Prev Button
+    // Perhatikan perubahan dari data-page menjadi data-page-num
+    links.append(`
+        <li class="page-item ${pagination.currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page-num="${pagination.currentPage - 1}">Prev</a>
+        </li>
+    `);
+
+    // Page Numbers
+    for (let i = 1; i <= pagination.totalPages; i++) {
+         links.append(`
+            <li class="page-item ${i === pagination.currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" data-page-num="${i}">${i}</a>
+            </li>
+         `);
+    }
+
+    // Next Button
+    links.append(`
+        <li class="page-item ${pagination.currentPage === pagination.totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page-num="${pagination.currentPage + 1}">Next</a>
+        </li>
+    `);
+
+    // Event Listener (Updated selector to data-page-num)
+    // Kita gunakan .off() dulu untuk memastikan tidak ada listener ganda saat render ulang
+    links.find('.page-link').off('click').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation(); // Penting agar tidak 'bubbling' ke atas
+        
+        const page = $(this).data('page-num'); // Ambil dari atribut baru
+        if (page && page !== pagination.currentPage) {
+            onClickCallback(page);
+        }
+    });
+}
+
+// --- FUNGSI GLOBAL MANAJEMEN POSYANDU ---
+window.tambahPosyandu = function() {
+    $('#formPosyandu')[0].reset();
+    $('#editPosyanduId').val('');
+    $('#modalPosyanduTitle').text('Tambah Posyandu Baru');
+    new bootstrap.Modal(document.getElementById('modalPosyandu')).show();
+}
+
+window.editPosyandu = function(id, nama, desa, ssid) {
+    $('#editPosyanduId').val(id);
+    $('#inputNamaPos').val(nama);
+    $('#inputDesaPos').val(desa);
+    $('#inputSpreadsheetId').val(ssid);
+    $('#modalPosyanduTitle').text('Edit Posyandu: ' + nama);
+    new bootstrap.Modal(document.getElementById('modalPosyandu')).show();
+}
+
+window.hapusPosyandu = function(id, nama) {
+    Swal.fire({
+        title: 'Hapus Posyandu?',
+        text: `Anda yakin ingin menghapus ${nama}? Data yang sudah ada mungkin akan menjadi yatim piatu.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Ya, Hapus'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            Swal.fire({title: 'Menghapus...', didOpen: () => Swal.showLoading()});
+            try {
+                const response = await callApi('deletePosyandu', { id: id });
+                if (response.status === 'success') {
+                    Swal.fire('Terhapus!', response.message, 'success');
+                    // Kita perlu cara untuk me-reload tabel. 
+                    // Cara termudah: trigger klik tab lagi jika sedang aktif
+                    if ($('#tab-posyandu').hasClass('active')) {
+                         $('#tab-posyandu').trigger('shown.bs.tab');
+                    }
+                } else {
+                    Swal.fire('Gagal', response.message, 'error');
+                }
+            } catch (e) {
+                Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+            }
+        }
+    });
+}
+
+// --- FUNGSI GLOBAL MANAJEMEN USER ---
+window.tambahUser = function() {
+    $('#formUser')[0].reset();
+    $('#editUserId').val('');
+    $('#modalUserTitle').text('Tambah User Baru');
+    $('#inputUsername').prop('readonly', false); // Username bisa diedit saat tambah baru
+    $('#helpPassword').text('Password wajib diisi untuk user baru.');
+    new bootstrap.Modal(document.getElementById('modalUser')).show();
+}
+
+window.editUser = function(id, username, role, posyanduId, namaLengkap, status) {
+    $('#editUserId').val(id);
+    $('#inputUsername').val(username).prop('readonly', true); // Username tidak boleh diganti saat edit
+    $('#inputRole').val(role);
+    $('#inputUnitKerja').val(posyanduId);
+    $('#inputNamaLengkap').val(namaLengkap);
+    $('#inputStatus').val(status);
+    
+    $('#modalUserTitle').text('Edit User: ' + username);
+    $('#helpPassword').text('Kosongkan jika tidak ingin mengubah password user ini.');
+    new bootstrap.Modal(document.getElementById('modalUser')).show();
+}
+
+// Tambahan: Fungsi Hapus User (Opsional, tapi baik untuk kelengkapan)
+// Note: Di backend kita belum buat deleteUser, tapi kita bisa pakai changeStatus jadi 'inactive'
+// Untuk sekarang kita pending dulu deleteUser fisik, fokus ke Add/Edit dulu.
+
 // --- HALAMAN WELCOME (BERANDA) ---
 window.init_welcome = function() {
     // Pastikan data user tersedia
     if (currentUser) {
         // Format: "Posyandu Mawar desa Sukamaju"
-        const unitText = `Posyandu ${currentUser.namaPosyandu} desa ${currentUser.namaDesa}`;
+        const unitText = `POSYANDU : ${currentUser.namaPosyandu} Desa ${currentUser.namaDesa}`;
         $('#welcomeUnit').text(unitText);
     }
 }

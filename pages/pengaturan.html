@@ -1,0 +1,234 @@
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="fw-bold text-primary"><i class="fas fa-cogs me-2"></i>Pengaturan</h2>
+    </div>
+</div>
+
+<ul class="nav nav-tabs mb-4" id="settingTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active fw-bold" id="tab-profil" data-bs-toggle="tab" data-bs-target="#content-profil" type="button" role="tab">
+            <i class="fas fa-user-cog me-2"></i>Profil Saya
+        </button>
+    </li>
+    <li class="nav-item admin-only d-none" role="presentation">
+        <button class="nav-link fw-bold" id="tab-posyandu" data-bs-toggle="tab" data-bs-target="#content-posyandu" type="button" role="tab">
+            <i class="fas fa-clinic-medical me-2"></i>Master Posyandu
+        </button>
+    </li>
+    <li class="nav-item admin-only d-none" role="presentation">
+        <button class="nav-link fw-bold" id="tab-users" data-bs-toggle="tab" data-bs-target="#content-users" type="button" role="tab">
+            <i class="fas fa-users-cog me-2"></i>Manajemen User
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="settingTabContent">
+    <div class="tab-pane fade show active" id="content-profil" role="tabpanel">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fas fa-key me-2 text-warning"></i>Ganti Password
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="formGantiPass">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Password Lama</label>
+                                <input type="password" id="oldPass" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Password Baru</label>
+                                <input type="password" id="newPass" class="form-control" required minlength="6">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold">Konfirmasi Password Baru</label>
+                                <input type="password" id="confirmPass" class="form-control" required minlength="6">
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary" id="btnSubmitPass">
+                                    Ubah Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="content-posyandu" role="tabpanel">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-6">
+                        <h6 class="mb-0 fw-bold text-primary">Daftar Posyandu</h6>
+                    </div>
+                    <div class="col-md-6 d-flex justify-content-end gap-2">
+                         <div class="input-group input-group-sm" style="max-width: 250px;">
+                            <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" id="searchPosyandu" placeholder="Cari Posyandu/Desa...">
+                        </div>
+                        <button class="btn btn-sm btn-success" onclick="tambahPosyandu()">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0" id="tabelPosyandu">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">ID</th>
+                                <th>Nama Posyandu</th>
+                                <th>Desa</th>
+                                <th>ID Spreadsheet</th>
+                                <th class="text-end pe-4">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPosyandu"><tr><td colspan="5" class="text-center py-4 text-muted">Memuat data...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center" id="pagContainerPos" style="visibility: hidden;">
+                    <span class="text-muted small" id="pagInfoPos">-</span>
+                    <nav><ul class="pagination pagination-sm mb-0" id="pagLinksPos"></ul></nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="content-users" role="tabpanel">
+         <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-6">
+                        <h6 class="mb-0 fw-bold text-primary">Daftar Pengguna</h6>
+                    </div>
+                    <div class="col-md-6 d-flex justify-content-end gap-2">
+                        <div class="input-group input-group-sm" style="max-width: 250px;">
+                            <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" id="searchUser" placeholder="Cari User/Unit...">
+                        </div>
+                        <button class="btn btn-sm btn-success" onclick="tambahUser()">
+                            <i class="fas fa-user-plus"></i> Tambah
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0" id="tabelUsers">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Username</th>
+                                <th>Nama Lengkap</th>
+                                <th>Role</th>
+                                <th>Unit Kerja</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyUsers"><tr><td colspan="6" class="text-center py-4 text-muted">Memuat data...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+             <div class="card-footer bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center" id="pagContainerUser" style="visibility: hidden;">
+                    <span class="text-muted small" id="pagInfoUser">-</span>
+                    <nav><ul class="pagination pagination-sm mb-0" id="pagLinksUser"></ul></nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPosyandu" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalPosyanduTitle">Posyandu</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formPosyandu">
+                    <input type="hidden" id="editPosyanduId">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nama Posyandu</label>
+                        <input type="text" class="form-control" id="inputNamaPos" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Desa / Kelurahan</label>
+                        <input type="text" class="form-control" id="inputDesaPos" required>
+                    </div>
+                     <div class="mb-3">
+                        <label class="form-label small fw-bold">ID Spreadsheet Database</label>
+                        <input type="text" class="form-control font-monospace" id="inputSpreadsheetId" required placeholder="1BxiMVs0X...">
+                        <div class="form-text">Salin ID dari URL Spreadsheet yang sudah disiapkan.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnSimpanPosyandu">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalUser" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalUserTitle">User Pengguna</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formUser">
+                    <input type="hidden" id="editUserId">
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                             <label class="form-label small fw-bold">Username <span class="text-danger">*</span></label>
+                             <input type="text" class="form-control" id="inputUsername" required>
+                        </div>
+                         <div class="col-6">
+                             <label class="form-label small fw-bold">Role</label>
+                             <select class="form-select" id="inputRole" required>
+                                 <option value="kader">Kader</option>
+                                 <option value="admin">Admin Puskesmas</option>
+                             </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nama Lengkap</label>
+                        <input type="text" class="form-control" id="inputNamaLengkap" required>
+                    </div>
+                     <div class="mb-3">
+                        <label class="form-label small fw-bold">Unit Kerja (Posyandu)</label>
+                        <select class="form-select" id="inputUnitKerja" required>
+                            <option value="">Pilih...</option>
+                             <option value="GLOBAL">GLOBAL (Khusus Admin)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                         <label class="form-label small fw-bold" id="labelPassword">Password</label>
+                         <input type="text" class="form-control" id="inputUserPass" placeholder="Minimal 6 karakter">
+                         <div class="form-text" id="helpPassword">Kosongkan jika tidak ingin mengubah password user ini.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Status Akun</label>
+                        <select class="form-select" id="inputStatus">
+                            <option value="active">Aktif</option>
+                            <option value="inactive">Non-Aktif (Tidak bisa login)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnSimpanUser">Simpan User</button>
+            </div>
+        </div>
+    </div>
+</div>

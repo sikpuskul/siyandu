@@ -69,7 +69,7 @@
 
 .list-group-item {
     border: none;
-    padding: 20px 30px;
+    padding: 10px 30px;
     color: #bbbec5 !important; /* Warna teks menu inactive */
 }
 
@@ -98,9 +98,56 @@
     }
 
     #wrapper.toggled #sidebar-wrapper {
-        margin-left: -15rem;
+        margin-left: -18rem;
     }
 }
+
+/* --- TWEAKS TAMPILAN FORMULIR (MODAL & TAB) --- */
+
+/* 1. Font dasar di area konten aplikasi dan modal */
+#app-content, .modal-body {
+    font-size: 0.95rem; /* Sedikit lebih kecil dari standar (1rem = 16px) */
+}
+
+/* 2. Label Formulir */
+.form-label {
+    margin-bottom: 0.25rem !important; /* Rapatkan jarak label ke input di bawahnya */
+    font-weight: 600 !important;       /* Pastikan label selalu agak tebal */
+    color: #4D455D;                    /* Warna standar tema gelap kita */
+}
+
+/* 3. Input, Select, dan Textarea */
+.form-control, .form-select, .input-group-text {
+    padding: 0.4rem 0.75rem;    /* Kurangi padding dalam input agar tidak terlalu 'gemuk' */
+    font-size: 0.9rem;         /* Samakan ukuran font isi input */
+}
+
+/* Khusus input ukuran besar (form-control-lg) kita kecilkan sedikit juga */
+.form-control-lg, .input-group-lg > .form-control, .input-group-lg > .input-group-text, .form-select-lg {
+    padding: 0.5rem 1rem;
+    font-size: 1.1rem;
+}
+
+/* 4. Merapatkan Jarak Vertikal antar baris formulir */
+/* Bootstrap default mb-3 adalah 1rem (16px). Kita kurangi sedikit jika dirasa terlalu renggang. */
+.modal-body .mb-3, 
+.tab-content .mb-3,
+.modal-body .row.g-3,
+.tab-content .row.g-3 {
+    /* margin-bottom: 0.75rem !important; */ /* Hilangkan komentar ini jika ingin LEBIH RAPAT lagi */
+}
+
+/* 5. Header Kartu (misal: "Antropometri") agar lebih ramping */
+.card-header {
+    padding: 0.5rem 1rem !important; /* Lebih tipis tingginya */
+}
+
+/* 6. Badge/Label Status agar font tidak terlalu besar */
+.badge {
+    font-weight: 500; /* Tidak perlu terlalu bold */
+    letter-spacing: 0.5px;
+}
+
 
 /* Styling untuk Nav Tabs agar lebih terlihat */
 .nav-tabs .nav-link {

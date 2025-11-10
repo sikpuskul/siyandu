@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Si-Yanduku ILP NG</title>
+    <title>Si Yandu ILP PKM Sumakul</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -17,8 +17,8 @@
 <body>
     <div class="d-flex" id="wrapper">
         <div class="bg-dark text-white border-end" id="sidebar-wrapper">
-            <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
-                <i class="fas fa-heartbeat me-2"></i>Si-Yanduku ILP NG
+            <div class="sidebar-heading text-center py-4 primary-text fs-6 fw-bold text-uppercase border-bottom">
+                <i class="fas fa-heartbeat me-2"></i>Si Yandu ILP PKM Sumakul
             </div>
             <div class="list-group list-group-flush my-3">
                 <a href="#" class="list-group-item list-group-item-action bg-transparent second-text active" data-page="welcome">
@@ -44,6 +44,11 @@
                     <i class="fas fa-file-export me-2"></i>Laporan & Ekspor
                 </a>
 
+                <div class="sidebar-divider"></div>
+
+                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text" data-page="pengaturan">
+                   <i class="fas fa-cog me-2"></i>Pengaturan
+                </a>
                 <div class="sidebar-divider"></div>
 
                 <a href="#" class="list-group-item list-group-item-action bg-transparent text-danger fw-bold" id="btnLogout">
@@ -74,6 +79,8 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><span class="dropdown-item-text text-muted" id="user-posyandu-info">Posyandu</span></li>
                                 <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" data-page="pengaturan"><i class="fas fa-cog me-2"></i>Pengaturan</a></li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="#" id="btnLogoutDropdown">Logout</a></li>
                             </ul>
                         </li>
@@ -87,7 +94,7 @@
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
-                        <p class="mt-2">Memuat Si-Yanduku ILP NG...</p>
+                        <p class="mt-2">Memuat Si Yandu...</p>
                     </div>
                 </div>
             </div>
@@ -327,7 +334,38 @@
         </div>
     </div>
 </div>
-        
+    
+    <div class="modal fade" id="modalRiwayat" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-history me-2"></i>Riwayat Kunjungan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5 id="riwayatNamaPasien" class="fw-bold mb-3">-</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Kategori saat itu</th>
+                                <th>Status</th>
+                                <th class="text-end">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelRiwayatBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
